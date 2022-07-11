@@ -1,0 +1,4 @@
+enum BlocLogType {
+  blocCreated,
+  blocChanged,
+}
