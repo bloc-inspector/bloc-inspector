@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         routes: {
-          InstancesScreen.routeName: (context) => InstancesScreen(),
+          InstancesScreen.routeName: (context) => const InstancesScreen(),
           LogsScreen.routeName: (context) => const LogsScreen(),
         },
       ),

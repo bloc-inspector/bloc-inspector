@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:nsd/nsd.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_investigator/blocs/service/service_event.dart';
 import 'package:flutter_bloc_investigator/blocs/service/service_state.dart';
@@ -31,13 +32,26 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     add(const Initialized());
   }
 
+  /// Initialize Services.
   void _initialized(Initialized event, Emitter<ServiceState> emit) async {
     emit(state.copyWith(
         server: await ServerSocket.bind(InternetAddress.anyIPv4, 8275)));
     state.server!.listen((client) {
       add(NewConnection(client));
     });
+
     logInfo("Socket Server Initialized");
+
+    if (!Platform.isLinux) {
+      final registration = await register(const Service(
+          name: 'flutter_bloc_investigator', type: '_http._tcp', port: 8275));
+
+      emit(state.copyWith(registration: registration));
+
+      logInfo("Network Service Registered");
+    } else {
+      logInfo("Skipping service registration as Linux is not supported.");
+    }
   }
 
   void _newInstance(NewInstance event, Emitter<ServiceState> emit) {
@@ -202,5 +216,11 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         event.client.close();
       },
     );
+  }
+
+  @override
+  Future<void> close() async {
+    super.close();
+    if (state.registration != null) await unregister(state.registration!);
   }
 }

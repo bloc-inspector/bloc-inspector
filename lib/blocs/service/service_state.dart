@@ -5,6 +5,7 @@ import 'package:flutter_bloc_investigator/models/bloc_log.dart';
 import 'package:flutter_bloc_investigator/models/instance_identity.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:nsd/nsd.dart';
 
 part 'service_state.freezed.dart';
 
@@ -19,6 +20,7 @@ class ServiceState extends Equatable with _$ServiceState {
     @Default({}) Map<int, String?> buffer,
     @Default({}) Map<String, List<BlocLog>> logs,
     InstanceIdentity? selectedInstanceIdentity,
+    Registration? registration,
     ServerSocket? server,
   }) = _ServiceState;
 
@@ -29,6 +31,7 @@ class ServiceState extends Equatable with _$ServiceState {
         clients,
         buffer,
         logs,
+        registration,
         selectedInstanceIdentity,
       ];
 }
