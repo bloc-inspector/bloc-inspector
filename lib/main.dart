@@ -1,10 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_investigator/blocs/service/service_bloc.dart';
+import 'package:flutter_bloc_investigator/cubits/selected_log_index_cubit.dart';
 import 'package:flutter_bloc_investigator/screens/instances.dart';
+import 'package:flutter_bloc_investigator/screens/logs.dart';
 import 'package:logger/logger.dart';
+import 'package:window_size/window_size.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    setWindowTitle('My App');
+    setWindowMaxSize(const Size(double.infinity, double.infinity));
+    setWindowMinSize(const Size(1280, 720));
+  }
   runApp(const MyApp());
 }
 
@@ -19,6 +31,10 @@ class MyApp extends StatelessWidget {
           create: (context) => ServiceBloc(),
           lazy: false,
         ),
+        BlocProvider<SelectedLogIndexCubit>(
+          create: (context) => SelectedLogIndexCubit(),
+          lazy: false,
+        ),
       ],
       child: MaterialApp(
         title: 'Flutter BLoC Investigator',
@@ -27,7 +43,8 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         routes: {
-          InstancesScreen.routeName: (context) => const InstancesScreen(),
+          InstancesScreen.routeName: (context) => InstancesScreen(),
+          LogsScreen.routeName: (context) => const LogsScreen(),
         },
       ),
     );
@@ -47,56 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   Logger logger = Logger();
   Map<int, String?> buffer = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _initServer();
-  }
-
-  void _initServer() async {
-    // final server = await ServerSocket.bind(InternetAddress.anyIPv4, 8275);
-    // server.listen((client) {
-    //   handleConnection(client);
-    // });
-  }
-
-  // void handleConnection(Socket client) {
-  //   logger.d('Connection from'
-  //       ' ${client.remoteAddress.address}:${client.remotePort}');
-
-  //   // listen for events from the client
-  //   client.listen(
-  //     // handle data from the client
-  //     (Uint8List data) async {
-  //       await Future.delayed(Duration(seconds: 1));
-  //       final message = String.fromCharCodes(data);
-  //       //final p = InvestigativePacket.fromJson(json.decode(message));
-  //       //logger.d(p);
-  //       logger.d(message.contains("\n"));
-  //       if (!message.endsWith("\n")) {
-  //         buffer[client.port] = (buffer[client.port] ?? "") + message;
-  //       } else {
-  //         logger.d(InvestigativePacket.fromJson(
-  //             json.decode((buffer[client.port]?.trim() ?? "") + message)));
-  //         buffer[client.port] = null;
-  //         client.writeln("Ok");
-  //       }
-  //     },
-
-  //     // handle errors
-  //     onError: (error) {
-  //       logger.e(error);
-  //       client.close();
-  //     },
-
-  //     // handle the client closing the connection
-  //     onDone: () {
-  //       print('Client left');
-  //       client.close();
-  //     },
-  //   );
-  // }
 
   void _incrementCounter() async {
     setState(() {

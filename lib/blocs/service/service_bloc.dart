@@ -25,6 +25,8 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     on<ClearBuffer>(_clearBuffer);
     on<ReadBuffer>(_readBuffer);
     on<Log>(_log);
+    on<SelectInstance>(_selectInstance);
+    on<ClearLogs>(_clearLogs);
 
     add(const Initialized());
   }
@@ -35,6 +37,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     state.server!.listen((client) {
       add(NewConnection(client));
     });
+    logInfo("Socket Server Initialized");
   }
 
   void _newInstance(NewInstance event, Emitter<ServiceState> emit) {
@@ -54,6 +57,18 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     });
   }
 
+  void _clearLogs(ClearLogs event, Emitter<ServiceState> emit) {
+    Map<String, List<BlocLog>> map = Map.from(state.logs);
+    map[event.identity.applicationId] = [];
+    emit(state.copyWith(
+      logs: map,
+    ));
+  }
+
+  void _selectInstance(SelectInstance event, Emitter<ServiceState> emit) {
+    emit(state.copyWith(selectedInstanceIdentity: event.identity));
+  }
+
   void _clearBuffer(ClearBuffer event, Emitter<ServiceState> emit) async {
     await lock.synchronized(() {
       emit(state.copyWith(buffer: Map.from(state.buffer)..[event.key] = null));
@@ -61,44 +76,103 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
   }
 
   void _log(Log event, Emitter<ServiceState> emit) {
+    List<BlocLog> logs =
+        List.from(state.logs[event.identity.applicationId] ?? []);
+    if (logs.length >= state.maxLogsCount) {
+      logs.removeAt(0);
+    }
+    logs.add(event.log.copyWith(
+      createdAt: DateTime.now(),
+    ));
+    Map<String, List<BlocLog>> map = Map.from(state.logs);
+    map[event.identity.applicationId] = logs;
     emit(state.copyWith(
-      logs: List.from(state.logs)
-        ..add(event.log.copyWith(
-          createdAt: DateTime.now(),
-        )),
+      logs: map,
     ));
   }
 
   void _readBuffer(ReadBuffer event, Emitter<ServiceState> emit) async {
-    try {
-      final InvestigativePacket packet = InvestigativePacket.fromJson(
-          json.decode((state.buffer[event.key]?.trim() ?? "") + event.remnant));
+    logInfo("Reading Buffer: ${event.key}");
+    lock.synchronized(() {
+      try {
+        final fullMessage =
+            (state.buffer[event.key]?.trim() ?? "") + event.remnant;
 
-      add(ClearBuffer(event.key));
+        add(ClearBuffer(event.key));
 
-      switch (packet.type) {
-        case PacketType.instanceIdentity:
-          add(NewInstance(packet.identity!));
-          break;
-        case PacketType.blocCreated:
-          add(Log(BlocLog(
-            type: BlocLogType.blocCreated,
-            blocName: "BlocName",
-          )));
-          break;
-        case PacketType.blocChanged:
-          add(Log(BlocLog(
-            type: BlocLogType.blocChanged,
-            blocChange: packet.blocChange,
-          )));
-          break;
-        case PacketType.blocError:
-          break;
+        final messages = fullMessage.split("[&&]");
+
+        for (String message in messages) {
+          // logger.d(message);
+          if (message.trim().isNotEmpty) {
+            final InvestigativePacket packet =
+                InvestigativePacket.fromJson(json.decode(message.trim()));
+            logger.e(packet.type);
+            switch (packet.type) {
+              case PacketType.instanceIdentity:
+                add(NewInstance(packet.identity));
+                break;
+              case PacketType.blocCreated:
+                _log(
+                    Log(
+                      packet.identity,
+                      BlocLog(
+                        type: BlocLogType.blocCreated,
+                        blocName: packet.blocName,
+                        state: packet.state,
+                      ),
+                    ),
+                    emit);
+                break;
+              case PacketType.blocFallbackCreated:
+                _log(
+                    Log(
+                      packet.identity,
+                      BlocLog(
+                        type: BlocLogType.blocFallbackCreated,
+                        blocName: packet.blocName,
+                        fallbackState: packet.fallbackState,
+                      ),
+                    ),
+                    emit);
+                break;
+              case PacketType.blocFallbackTransitioned:
+                _log(
+                    Log(
+                      packet.identity,
+                      BlocLog(
+                          type: BlocLogType.blocFallbackTransitioned,
+                          blocName: packet.blocName,
+                          blocChange: packet.blocChange,
+                          oldFallbackState: packet.oldFallbackState,
+                          newFallbackState: packet.newFallbackState),
+                    ),
+                    emit);
+                break;
+              case PacketType.blocTransitioned:
+                _log(
+                    Log(
+                        packet.identity,
+                        BlocLog(
+                          type: BlocLogType.blocTransitioned,
+                          blocName: packet.blocName,
+                          blocChange: packet.blocChange,
+                        )),
+                    emit);
+                break;
+              case PacketType.blocError:
+                break;
+              default:
+            }
+          }
+        }
+      } catch (error, trace) {
+        final fullMessage =
+            (state.buffer[event.key]?.trim() ?? "") + event.remnant;
+        logError(error, trace);
+        add(ClearBuffer(event.key));
       }
-    } catch (error, trace) {
-      logError(error, trace);
-      add(ClearBuffer(event.key));
-    }
+    });
   }
 
   void _newConnection(NewConnection event, Emitter<ServiceState> emit) {
@@ -110,7 +184,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
 
     event.client.listen(
       (Uint8List data) async {
-        await Future.delayed(const Duration(seconds: 1));
+        // await Future.delayed(const Duration(milliseconds: 500));
         final message = String.fromCharCodes(data);
         if (!message.endsWith("\n")) {
           add(Buffer(event.client.port, message));

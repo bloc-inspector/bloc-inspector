@@ -18,5 +18,8 @@ class ServiceEvent with _$ServiceEvent {
   const factory ServiceEvent.buffer(int key, String data) = Buffer;
   const factory ServiceEvent.clearBuffer(int key) = ClearBuffer;
   const factory ServiceEvent.readBuffer(int key, String remnant) = ReadBuffer;
-  const factory ServiceEvent.log(BlocLog log) = Log;
+  const factory ServiceEvent.log(InstanceIdentity identity, BlocLog log) = Log;
+  const factory ServiceEvent.selectInstance(InstanceIdentity identity) =
+      SelectInstance;
+  const factory ServiceEvent.clearLogs(InstanceIdentity identity) = ClearLogs;
 }

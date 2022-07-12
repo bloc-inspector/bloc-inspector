@@ -7,7 +7,7 @@ part 'instance_identity.g.dart';
 
 @freezed
 class InstanceIdentity with _$InstanceIdentity {
-  factory InstanceIdentity({
+  const factory InstanceIdentity({
     @Default("com.example.app") String applicationId,
     @Default("") String appName,
     @Default("") String deviceOS,

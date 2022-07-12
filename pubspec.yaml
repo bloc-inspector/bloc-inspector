@@ -44,6 +44,12 @@ dependencies:
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
   synchronized: ^3.0.0
+  timeago: ^3.2.2
+  pluto_menu_bar: ^1.1.1
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

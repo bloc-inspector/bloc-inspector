@@ -12,11 +12,14 @@ part 'investigative_packet.g.dart';
 @freezed
 class InvestigativePacket with _$InvestigativePacket {
   factory InvestigativePacket({
-    @Default(PacketType.instanceIdentity)
-    @JsonKey(unknownEnumValue: PacketType.instanceIdentity)
-        PacketType type,
-    InstanceIdentity? identity,
+    @Default(PacketType.instanceIdentity) PacketType type,
+    @JsonKey(name: "bloc_name") @Default("") String blocName,
+    @Default(InstanceIdentity()) InstanceIdentity identity,
     @JsonKey(name: "bloc_change") BlocChange? blocChange,
+    Map<String, dynamic>? state,
+    @JsonKey(name: "fall_back_state") String? fallbackState,
+    @JsonKey(name: "old_fall_back_state") String? oldFallbackState,
+    @JsonKey(name: "new_fall_back_state") String? newFallbackState,
   }) = _InvestigativePacket;
 
   factory InvestigativePacket.fromJson(Map<String, dynamic> json) =>

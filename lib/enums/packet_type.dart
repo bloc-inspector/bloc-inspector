@@ -7,6 +7,12 @@ enum PacketType {
   blocCreated,
   @JsonValue("bloc_changed")
   blocChanged,
+  @JsonValue("bloc_transitioned")
+  blocTransitioned,
+  @JsonValue("bloc_fallback_transitioned")
+  blocFallbackTransitioned,
+  @JsonValue("bloc_fallback_created")
+  blocFallbackCreated,
   @JsonValue("bloc_error")
   blocError,
 }

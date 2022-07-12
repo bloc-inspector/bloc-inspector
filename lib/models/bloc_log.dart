@@ -14,6 +14,10 @@ class BlocLog with _$BlocLog {
     BlocChange? blocChange,
     String? blocName,
     DateTime? createdAt,
+    Map<String, dynamic>? state,
+    String? fallbackState,
+    String? oldFallbackState,
+    String? newFallbackState,
   }) = _BlocLog;
 
   factory BlocLog.fromJson(Map<String, dynamic> json) =>

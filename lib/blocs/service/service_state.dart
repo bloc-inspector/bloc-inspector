@@ -13,10 +13,12 @@ class ServiceState extends Equatable with _$ServiceState {
   const ServiceState._();
 
   const factory ServiceState({
+    @Default(40) int maxLogsCount,
     @Default([]) List<InstanceIdentity> instances,
     @Default({}) Map<int, Socket> clients,
     @Default({}) Map<int, String?> buffer,
-    @Default([]) List<BlocLog> logs,
+    @Default({}) Map<String, List<BlocLog>> logs,
+    InstanceIdentity? selectedInstanceIdentity,
     ServerSocket? server,
   }) = _ServiceState;
 
@@ -27,5 +29,6 @@ class ServiceState extends Equatable with _$ServiceState {
         clients,
         buffer,
         logs,
+        selectedInstanceIdentity,
       ];
 }
