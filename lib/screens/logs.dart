@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_investigator/blocs/service/service_bloc.dart';
+import 'package:flutter_bloc_investigator/blocs/service/service_event.dart';
 import 'package:flutter_bloc_investigator/blocs/service/service_state.dart';
 import 'package:flutter_bloc_investigator/widgets/custom_app_bar.dart';
 import 'package:flutter_bloc_investigator/widgets/log_item.dart';
@@ -14,9 +17,11 @@ class LogsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ServiceBloc, ServiceState>(
       builder: (context, state) => Scaffold(
-        appBar: CustomAppBar(
-          width: MediaQuery.of(context).size.width,
-        ),
+        appBar: Platform.isMacOS
+            ? null
+            : CustomAppBar(
+                width: MediaQuery.of(context).size.width,
+              ),
         body: state.selectedInstanceIdentity == null ||
                 state.logs[state.selectedInstanceIdentity!.applicationId] ==
                     null
@@ -32,10 +37,40 @@ class LogsScreen extends StatelessWidget {
                         .reversed
                         .elementAt(index))),
               ),
-        floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+        floatingActionButton: Stack(fit: StackFit.expand, children: [
+          Positioned(
+            width: 45,
+            height: 45,
+            right: 30,
+            bottom: 30,
+            child: FloatingActionButton(
+              heroTag: "Back",
+              child: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ),
+          Positioned(
+            width: 120,
+            height: 45,
+            left: 50,
+            bottom: 30,
+            child: Row(children: [
+              FloatingActionButton(
+                heroTag: "Clear",
+                child: const Icon(Icons.clear),
+                onPressed: () => context.read<ServiceBloc>().add(
+                    ServiceEvent.clearLogs(state.selectedInstanceIdentity!)),
+              ),
+              FloatingActionButton(
+                heroTag: "Refresh",
+                child: const Icon(Icons.refresh),
+                onPressed: () => context
+                    .read<ServiceBloc>()
+                    .add(const ServiceEvent.triggerUIRebuild()),
+              )
+            ]),
+          )
+        ]),
       ),
     );
   }

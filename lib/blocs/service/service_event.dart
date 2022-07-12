@@ -22,4 +22,5 @@ class ServiceEvent with _$ServiceEvent {
   const factory ServiceEvent.selectInstance(InstanceIdentity identity) =
       SelectInstance;
   const factory ServiceEvent.clearLogs(InstanceIdentity identity) = ClearLogs;
+  const factory ServiceEvent.triggerUIRebuild() = TriggerUIRebuild;
 }

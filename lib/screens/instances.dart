@@ -18,9 +18,11 @@ class InstancesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        width: MediaQuery.of(context).size.width,
-      ),
+      appBar: Platform.isMacOS
+          ? null
+          : CustomAppBar(
+              width: MediaQuery.of(context).size.width,
+            ),
       body: BlocBuilder<ServiceBloc, ServiceState>(
         builder: (context, state) => Padding(
           padding: const EdgeInsets.all(10),

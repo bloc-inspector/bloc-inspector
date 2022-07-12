@@ -22,6 +22,7 @@ class ServiceState extends Equatable with _$ServiceState {
     InstanceIdentity? selectedInstanceIdentity,
     Registration? registration,
     ServerSocket? server,
+    @Default(0) int builderTrigger,
   }) = _ServiceState;
 
   @override
@@ -33,5 +34,6 @@ class ServiceState extends Equatable with _$ServiceState {
         logs,
         registration,
         selectedInstanceIdentity,
+        builderTrigger,
       ];
 }

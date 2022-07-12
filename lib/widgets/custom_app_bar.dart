@@ -5,26 +5,29 @@ import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double width;
-  const CustomAppBar({Key? key, required this.width}) : super(key: key);
+  final String? title;
+  const CustomAppBar({
+    Key? key,
+    required this.width,
+    this.title,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Platform.isAndroid
         ? AppBar(
-            title: const Text("Application Instances"),
+            title: title != null ? Text(title!) : null,
           )
-        : (!Platform.isMacOS
-            ? PlutoMenuBar(menus: [
-                PlutoMenuItem(title: "File", children: [
-                  PlutoMenuItem(
-                    title: "Save Logs",
-                  ),
-                  PlutoMenuItem(
-                    title: "Clear All Logs",
-                  )
-                ]),
-              ])
-            : Container());
+        : PlutoMenuBar(menus: [
+            PlutoMenuItem(title: "File", children: [
+              PlutoMenuItem(
+                title: "Save Logs",
+              ),
+              PlutoMenuItem(
+                title: "Clear All Logs",
+              )
+            ]),
+          ]);
   }
 
   @override

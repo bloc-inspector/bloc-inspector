@@ -28,6 +28,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     on<Log>(_log);
     on<SelectInstance>(_selectInstance);
     on<ClearLogs>(_clearLogs);
+    on<TriggerUIRebuild>(_triggerUIRebuild);
 
     add(const Initialized());
   }
@@ -73,10 +74,16 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
 
   void _clearLogs(ClearLogs event, Emitter<ServiceState> emit) {
     Map<String, List<BlocLog>> map = Map.from(state.logs);
-    map[event.identity.applicationId] = [];
-    emit(state.copyWith(
-      logs: map,
-    ));
+    // Must have at least one log entry.
+    if ((map[event.identity.applicationId]?.length ?? 0) > 1) {
+      // Leave the latest log behind.
+      map[event.identity.applicationId] = [
+        map[event.identity.applicationId]!.last
+      ];
+      emit(state.copyWith(
+        logs: map,
+      ));
+    }
   }
 
   void _selectInstance(SelectInstance event, Emitter<ServiceState> emit) {
@@ -216,6 +223,10 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
         event.client.close();
       },
     );
+  }
+
+  void _triggerUIRebuild(TriggerUIRebuild event, Emitter<ServiceState> emit) {
+    emit(state.copyWith(builderTrigger: state.builderTrigger + 1));
   }
 
   @override
