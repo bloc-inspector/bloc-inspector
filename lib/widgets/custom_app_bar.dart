@@ -13,16 +13,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ? AppBar(
             title: const Text("Application Instances"),
           )
-        : PlutoMenuBar(menus: [
-            PlutoMenuItem(title: "File", children: [
-              PlutoMenuItem(
-                title: "Save Logs",
-              ),
-              PlutoMenuItem(
-                title: "Clear All Logs",
-              )
-            ]),
-          ]);
+        : (!Platform.isMacOS
+            ? PlutoMenuBar(menus: [
+                PlutoMenuItem(title: "File", children: [
+                  PlutoMenuItem(
+                    title: "Save Logs",
+                  ),
+                  PlutoMenuItem(
+                    title: "Clear All Logs",
+                  )
+                ]),
+              ])
+            : Container());
   }
 
   @override

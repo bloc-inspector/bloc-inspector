@@ -8,15 +8,12 @@ import 'package:flutter_bloc_investigator/blocs/service/service_state.dart';
 import 'package:flutter_bloc_investigator/extensions/string.dart';
 import 'package:flutter_bloc_investigator/screens/logs.dart';
 import 'package:flutter_bloc_investigator/widgets/custom_app_bar.dart';
-import 'package:pluto_menu_bar/pluto_menu_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class InstancesScreen extends StatelessWidget {
   static const String routeName = "application_instances";
 
-  final List<String> _menuItems = ["Clear All Logs"];
-
-  InstancesScreen({Key? key}) : super(key: key);
+  const InstancesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +25,8 @@ class InstancesScreen extends StatelessWidget {
         builder: (context, state) => Padding(
           padding: const EdgeInsets.all(10),
           child: GridView.builder(
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
             itemCount: state.instances.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
