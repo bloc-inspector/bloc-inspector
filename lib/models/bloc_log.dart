@@ -18,6 +18,7 @@ class BlocLog with _$BlocLog {
     String? fallbackState,
     String? oldFallbackState,
     String? newFallbackState,
+    String? decodeErrorReason,
   }) = _BlocLog;
 
   factory BlocLog.fromJson(Map<String, dynamic> json) =>

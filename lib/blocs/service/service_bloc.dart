@@ -128,7 +128,6 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
           if (message.trim().isNotEmpty) {
             final InvestigativePacket packet =
                 InvestigativePacket.fromJson(json.decode(message.trim()));
-            logger.e(packet.type);
             switch (packet.type) {
               case PacketType.instanceIdentity:
                 add(NewInstance(packet.identity));
@@ -151,6 +150,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
                       packet.identity,
                       BlocLog(
                         type: BlocLogType.blocFallbackCreated,
+                        decodeErrorReason: packet.decodeErrorReason,
                         blocName: packet.blocName,
                         fallbackState: packet.fallbackState,
                       ),
@@ -162,6 +162,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
                     Log(
                       packet.identity,
                       BlocLog(
+                          decodeErrorReason: packet.decodeErrorReason,
                           type: BlocLogType.blocFallbackTransitioned,
                           blocName: packet.blocName,
                           blocChange: packet.blocChange,
