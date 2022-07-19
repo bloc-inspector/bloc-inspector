@@ -23,10 +23,11 @@ class TypeText extends StatelessWidget {
   }
 
   String get _processed {
-    if (text is List) {
+    if (text is List || text is Map) {
       JsonEncoder encoder = const JsonEncoder.withIndent('    ');
       return encoder.convert(text);
     }
+
     return text.toString();
   }
 
@@ -34,7 +35,7 @@ class TypeText extends StatelessWidget {
     if (colorOverride != null) return colorOverride;
     if (text is bool) return Colors.purple;
     if (text is String) return Colors.brown;
-    if (text is List) return Colors.brown;
+    if (text is List || text is Map) return Colors.brown;
     return null;
   }
 }
