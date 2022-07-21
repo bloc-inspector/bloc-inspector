@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flutter_bloc_investigator">
+    package="com.example.bloc_inspector">
    <application
-        android:label="flutter_bloc_investigator"
+        android:label="bloc_inspector"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

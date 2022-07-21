@@ -1,4 +1,4 @@
-package com.example.flutter_bloc_investigator
+package com.example.bloc_inspector
 
 import io.flutter.embedding.android.FlutterActivity
 

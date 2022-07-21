@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc_investigator/cubits/selected_log_index_cubit.dart';
-import 'package:flutter_bloc_investigator/models/bloc_log.dart';
-import 'package:flutter_bloc_investigator/widgets/pair_widget.dart';
-import 'package:flutter_bloc_investigator/widgets/type_text.dart';
+import 'package:bloc_inspector/cubits/selected_log_index_cubit.dart';
+import 'package:bloc_inspector/models/bloc_log.dart';
+import 'package:bloc_inspector/widgets/pair_widget.dart';
+import 'package:bloc_inspector/widgets/type_text.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class BlocFallbackTransitionedItem extends StatelessWidget {

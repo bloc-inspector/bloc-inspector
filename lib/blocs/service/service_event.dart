@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter_bloc_investigator/models/bloc_log.dart';
-import 'package:flutter_bloc_investigator/models/instance_identity.dart';
+import 'package:bloc_inspector/models/bloc_log.dart';
+import 'package:bloc_inspector/models/instance_identity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'service_event.freezed.dart';

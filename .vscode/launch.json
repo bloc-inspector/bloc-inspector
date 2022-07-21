@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "flutter_bloc_investigator",
+            "name": "bloc_inspector",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flutter_bloc_investigator (profile mode)",
+            "name": "bloc_inspector (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "flutter_bloc_investigator (release mode)",
+            "name": "bloc_inspector (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

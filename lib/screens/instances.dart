@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc_investigator/blocs/service/service_bloc.dart';
-import 'package:flutter_bloc_investigator/blocs/service/service_event.dart';
-import 'package:flutter_bloc_investigator/blocs/service/service_state.dart';
-import 'package:flutter_bloc_investigator/extensions/string.dart';
-import 'package:flutter_bloc_investigator/screens/logs.dart';
-import 'package:flutter_bloc_investigator/widgets/custom_app_bar.dart';
+import 'package:bloc_inspector/blocs/service/service_bloc.dart';
+import 'package:bloc_inspector/blocs/service/service_event.dart';
+import 'package:bloc_inspector/blocs/service/service_state.dart';
+import 'package:bloc_inspector/extensions/string.dart';
+import 'package:bloc_inspector/screens/logs.dart';
+import 'package:bloc_inspector/widgets/custom_app_bar.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class InstancesScreen extends StatelessWidget {

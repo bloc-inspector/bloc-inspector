@@ -1,4 +1,4 @@
-# flutter_bloc_investigator
+# bloc_inspector
 
 A new Flutter project.
 

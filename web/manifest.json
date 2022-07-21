@@ -1,6 +1,6 @@
 {
-    "name": "flutter_bloc_investigator",
-    "short_name": "flutter_bloc_investigator",
+    "name": "bloc_inspector",
+    "short_name": "bloc_inspector",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

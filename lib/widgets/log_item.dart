@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc_investigator/enums/bloc_log_type.dart';
-import 'package:flutter_bloc_investigator/models/bloc_log.dart';
-import 'package:flutter_bloc_investigator/widgets/bloc_created_item.dart';
-import 'package:flutter_bloc_investigator/widgets/bloc_fallback_created_item.dart';
-import 'package:flutter_bloc_investigator/widgets/bloc_fallback_transitioned_item.dart';
-import 'package:flutter_bloc_investigator/widgets/bloc_transitioned_item.dart';
+import 'package:bloc_inspector/enums/bloc_log_type.dart';
+import 'package:bloc_inspector/models/bloc_log.dart';
+import 'package:bloc_inspector/widgets/bloc_created_item.dart';
+import 'package:bloc_inspector/widgets/bloc_fallback_created_item.dart';
+import 'package:bloc_inspector/widgets/bloc_fallback_transitioned_item.dart';
+import 'package:bloc_inspector/widgets/bloc_transitioned_item.dart';
 
 class LogItem extends StatelessWidget {
   final BlocLog log;

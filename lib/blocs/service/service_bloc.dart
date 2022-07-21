@@ -4,13 +4,13 @@ import 'dart:typed_data';
 
 import 'package:nsd/nsd.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bloc_investigator/blocs/service/service_event.dart';
-import 'package:flutter_bloc_investigator/blocs/service/service_state.dart';
-import 'package:flutter_bloc_investigator/enums/bloc_log_type.dart';
-import 'package:flutter_bloc_investigator/enums/packet_type.dart';
-import 'package:flutter_bloc_investigator/helpers/logging_helper.dart';
-import 'package:flutter_bloc_investigator/models/bloc_log.dart';
-import 'package:flutter_bloc_investigator/models/investigative_packet.dart';
+import 'package:bloc_inspector/blocs/service/service_event.dart';
+import 'package:bloc_inspector/blocs/service/service_state.dart';
+import 'package:bloc_inspector/enums/bloc_log_type.dart';
+import 'package:bloc_inspector/enums/packet_type.dart';
+import 'package:bloc_inspector/helpers/logging_helper.dart';
+import 'package:bloc_inspector/models/bloc_log.dart';
+import 'package:bloc_inspector/models/investigative_packet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
 
@@ -45,7 +45,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
 
     if (!Platform.isLinux) {
       final registration = await register(const Service(
-          name: 'flutter_bloc_investigator', type: '_http._tcp', port: 8275));
+          name: 'bloc_inspector', type: '_http._tcp', port: 8275));
 
       emit(state.copyWith(registration: registration));
 
