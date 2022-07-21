@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=FBLoC Invetigator
+Comment=Debug your Flutter BLoCs
+Exec=fbloc-investigator 
+Icon=${SNAP}/meta/gui/fbloc-investigator.png
+Terminal=false
+Type=Application
+Categories=Productivity;

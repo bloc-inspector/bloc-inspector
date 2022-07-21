@@ -1,0 +1,25 @@
+name: fbloc-investigator # you probably want to 'snapcraft register <name>'
+base: core18
+version: 0.0.1+1
+summary: Investigate Flutter BLoCs.
+description: |
+  Observe transition of events and state mutations in your BLocs to easily trace those annoying little bugs.
+  See how your BloCs behave in real-time.
+
+grade: devel
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+apps:
+  fbloc-investigator:
+    command: fbloc-investigator
+    extensions: [flutter-dev]
+    plugs:
+      - network
+    slots:
+      - dbus-fbloc-investigator
+
+parts:
+  fbloc-investigator:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart
