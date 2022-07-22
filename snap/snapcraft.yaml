@@ -1,4 +1,4 @@
-name: bloc-inspector
+name: bloc-inspector-client
 base: core18
 version: 0.0.1+1
 summary: Investigate or Inspect Flutter BLoCs.
@@ -10,16 +10,16 @@ grade: devel
 confinement: strict
 
 apps:
-  bloc-inspector:
-    command: bloc_inspector
+  bloc-inspector-client:
+    command: bloc_inspector_client
     extensions: [flutter-master]
     plugs:
       - network
     slots:
-      - dbus-bloc-inspector
+      - dbus-bloc-inspector-client
 
 parts:
-  bloc-inspector:
+  bloc-inspector-client:
     source: .
     plugin: flutter
     flutter-target: lib/main.dart

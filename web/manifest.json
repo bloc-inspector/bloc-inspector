@@ -1,6 +1,6 @@
 {
-    "name": "bloc_inspector",
-    "short_name": "bloc_inspector",
+    "name": "bloc_inspector_client",
+    "short_name": "bloc_inspector_client",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,4 @@
-# bloc_inspector
+# bloc_inspector_client
 
 A new Flutter project.
 

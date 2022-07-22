@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:bloc_inspector/models/bloc_log.dart';
-import 'package:bloc_inspector/models/instance_identity.dart';
+import 'package:bloc_inspector_client/models/bloc_log.dart';
+import 'package:bloc_inspector_client/models/instance_identity.dart';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:nsd/nsd.dart';

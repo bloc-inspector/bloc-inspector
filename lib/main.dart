@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bloc_inspector/blocs/service/service_bloc.dart';
-import 'package:bloc_inspector/cubits/selected_log_index_cubit.dart';
-import 'package:bloc_inspector/screens/instances.dart';
-import 'package:bloc_inspector/screens/logs.dart';
+import 'package:bloc_inspector_client/blocs/service/service_bloc.dart';
+import 'package:bloc_inspector_client/cubits/selected_log_index_cubit.dart';
+import 'package:bloc_inspector_client/screens/instances.dart';
+import 'package:bloc_inspector_client/screens/logs.dart';
 import 'package:window_size/window_size.dart';
 
 void main() {
