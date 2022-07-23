@@ -1,6 +1,6 @@
 name: bloc-inspector-client
 base: core18
-version: 0.0.1+1
+version: 0.0.3+3
 summary: Investigate or Inspect Flutter BLoCs.
 description: |
   Observe transition of events and state mutations in your BLocs to easily trace those annoying little bugs.
@@ -8,6 +8,12 @@ description: |
 
 grade: devel
 confinement: strict
+
+slots:
+  dbus-bloc-inspector-client:
+    interface: dbus
+    bus: session
+    name: com.cynobit.bloc-inspector-client
 
 apps:
   bloc-inspector-client:
