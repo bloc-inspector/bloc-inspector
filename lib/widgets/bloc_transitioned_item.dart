@@ -11,10 +11,10 @@ class BlocTransitionedItem extends StatelessWidget {
   final int index;
 
   const BlocTransitionedItem({
-    Key? key,
+    super.key,
     required this.log,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class BlocTransitionedItem extends StatelessWidget {
                   ],
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText2
+                      .bodyMedium
                       ?.copyWith(color: Colors.white)),
             ),
           ),
@@ -157,7 +157,6 @@ class BlocTransitionedItem extends StatelessWidget {
                                           : null,
                                       log.blocChange!.newState[e.value])))
                         ]))
-                .toList()
           ],
         ),
       ),

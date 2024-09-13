@@ -10,10 +10,10 @@ class BlocFallbackCreatedItem extends StatelessWidget {
   final BlocLog log;
   final int index;
   const BlocFallbackCreatedItem({
-    Key? key,
+    super.key,
     required this.log,
     required this.index,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class BlocFallbackCreatedItem extends StatelessWidget {
                   ],
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText2
+                      .bodyMedium
                       ?.copyWith(color: Colors.white)),
             ),
           ),

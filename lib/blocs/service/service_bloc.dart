@@ -1,44 +1,46 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:bloc_inspector_client/models/instance_identity.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:nsd/nsd.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bloc_inspector_client/blocs/service/service_event.dart';
-import 'package:bloc_inspector_client/blocs/service/service_state.dart';
 import 'package:bloc_inspector_client/enums/bloc_log_type.dart';
 import 'package:bloc_inspector_client/enums/packet_type.dart';
 import 'package:bloc_inspector_client/helpers/logging_helper.dart';
 import 'package:bloc_inspector_client/models/bloc_log.dart';
 import 'package:bloc_inspector_client/models/investigative_packet.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:collection/collection.dart';
+import 'package:equatable/equatable.dart';
 import 'package:synchronized/synchronized.dart' as synchronized;
+
+part 'service_state.dart';
+part 'service_event.dart';
+part 'service_bloc.freezed.dart';
 
 class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
   final synchronized.Lock lock = synchronized.Lock();
 
   ServiceBloc({ServiceState initialState = const ServiceState()})
       : super(initialState) {
-    on<Initialized>(_initialized);
-    on<NewInstance>(_newInstance);
-    on<NewConnection>(_newConnection);
-    on<Buffer>(_buffer);
-    on<ClearBuffer>(_clearBuffer);
-    on<ReadBuffer>(_readBuffer);
-    on<Log>(_log);
-    on<SelectInstance>(_selectInstance);
-    on<ClearLogs>(_clearLogs);
-    on<TriggerUIRebuild>(_triggerUIRebuild);
+    on<_Initialized>(_initialized);
+    on<_NewInstance>(_newInstance);
+    on<_Log>(_log);
+    on<_SelectInstance>(_selectInstance);
+    on<_ClearLogs>(_clearLogs);
+    on<_TriggerUIRebuild>(_triggerUIRebuild);
+    on<_HandleHttpRequest>(_handleHttpRequest);
 
-    add(const Initialized());
+    add(const _Initialized());
   }
 
   /// Initialize Services.
-  void _initialized(Initialized event, Emitter<ServiceState> emit) async {
+  void _initialized(_Initialized event, Emitter<ServiceState> emit) async {
     emit(state.copyWith(
-        server: await ServerSocket.bind(InternetAddress.anyIPv4, 8275)));
-    state.server!.listen((client) {
-      add(NewConnection(client));
+        server: await HttpServer.bind(InternetAddress.loopbackIPv4, 8275)));
+
+    state.server?.listen((HttpRequest request) {
+      add(_HandleHttpRequest(request));
     });
 
     logInfo("Socket Server Initialized");
@@ -55,7 +57,96 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     }
   }
 
-  void _newInstance(NewInstance event, Emitter<ServiceState> emit) {
+  void _handleHttpRequest(
+      _HandleHttpRequest event, Emitter<ServiceState> emit) async {
+    final request = event.request;
+    final response = request.response;
+    final path = request.uri.path;
+
+    logInfo(
+        "Request received from ${request.connectionInfo?.remoteAddress}:${request.connectionInfo?.remotePort}");
+
+    logInfo(path);
+
+    try {
+      if (path == "/" && request.method == "POST") {
+        String content = await utf8.decoder.bind(request).join();
+        logInfo("Content: $content");
+        dynamic data = jsonDecode(content);
+        final InvestigativePacket packet = InvestigativePacket.fromJson(data);
+        switch (packet.type) {
+          case PacketType.instanceIdentity:
+            add(_NewInstance(packet.identity));
+            break;
+          case PacketType.blocCreated:
+            _log(
+                _Log(
+                  packet.identity,
+                  BlocLog(
+                    type: BlocLogType.blocCreated,
+                    blocName: packet.blocName,
+                    state: packet.state,
+                  ),
+                ),
+                emit);
+            break;
+          case PacketType.blocFallbackCreated:
+            _log(
+                _Log(
+                  packet.identity,
+                  BlocLog(
+                    type: BlocLogType.blocFallbackCreated,
+                    decodeErrorReason: packet.decodeErrorReason,
+                    blocName: packet.blocName,
+                    fallbackState: packet.fallbackState,
+                  ),
+                ),
+                emit);
+            break;
+          case PacketType.blocFallbackTransitioned:
+            _log(
+                _Log(
+                  packet.identity,
+                  BlocLog(
+                      decodeErrorReason: packet.decodeErrorReason,
+                      type: BlocLogType.blocFallbackTransitioned,
+                      blocName: packet.blocName,
+                      blocChange: packet.blocChange,
+                      oldFallbackState: packet.oldFallbackState,
+                      newFallbackState: packet.newFallbackState),
+                ),
+                emit);
+            break;
+          case PacketType.blocTransitioned:
+            _log(
+                _Log(
+                    packet.identity,
+                    BlocLog(
+                      type: BlocLogType.blocTransitioned,
+                      blocName: packet.blocName,
+                      blocChange: packet.blocChange,
+                    )),
+                emit);
+            break;
+          case PacketType.blocError:
+            break;
+          default:
+        }
+        response.write(jsonEncode({"status": "ok"}));
+        response.close();
+        logInfo(
+            "Request from ${request.connectionInfo?.remoteAddress}:${request.connectionInfo?.remotePort} processed!");
+      } else {
+        response.write("Not Found");
+        response.close();
+      }
+    } catch (error, trace) {
+      logError(error, trace);
+      response.write(jsonEncode({"status": "error"}));
+    }
+  }
+
+  void _newInstance(_NewInstance event, Emitter<ServiceState> emit) {
     if (state.instances.firstWhereOrNull(
             (e) => e.applicationId == event.identity.applicationId) ==
         null) {
@@ -64,15 +155,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     }
   }
 
-  void _buffer(Buffer event, Emitter<ServiceState> emit) async {
-    await lock.synchronized(() {
-      emit(state.copyWith(
-          buffer: Map.from(state.buffer)
-            ..[event.key] = (state.buffer[event.key] ?? "") + event.data));
-    });
-  }
-
-  void _clearLogs(ClearLogs event, Emitter<ServiceState> emit) {
+  void _clearLogs(_ClearLogs event, Emitter<ServiceState> emit) {
     Map<String, List<BlocLog>> map = Map.from(state.logs);
     // Must have at least one log entry.
     if ((map[event.identity.applicationId]?.length ?? 0) > 1) {
@@ -86,17 +169,11 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     }
   }
 
-  void _selectInstance(SelectInstance event, Emitter<ServiceState> emit) {
+  void _selectInstance(_SelectInstance event, Emitter<ServiceState> emit) {
     emit(state.copyWith(selectedInstanceIdentity: event.identity));
   }
 
-  void _clearBuffer(ClearBuffer event, Emitter<ServiceState> emit) async {
-    await lock.synchronized(() {
-      emit(state.copyWith(buffer: Map.from(state.buffer)..[event.key] = null));
-    });
-  }
-
-  void _log(Log event, Emitter<ServiceState> emit) {
+  void _log(_Log event, Emitter<ServiceState> emit) {
     List<BlocLog> logs =
         List.from(state.logs[event.identity.applicationId] ?? []);
     if (logs.length >= state.maxLogsCount) {
@@ -112,121 +189,7 @@ class ServiceBloc extends Bloc<ServiceEvent, ServiceState> {
     ));
   }
 
-  void _readBuffer(ReadBuffer event, Emitter<ServiceState> emit) async {
-    logInfo("Reading Buffer: ${event.key}");
-    lock.synchronized(() {
-      try {
-        final fullMessage =
-            (state.buffer[event.key]?.trim() ?? "") + event.remnant;
-
-        add(ClearBuffer(event.key));
-
-        final messages = fullMessage.split("[&&]");
-
-        for (String message in messages) {
-          // logger.d(message);
-          if (message.trim().isNotEmpty) {
-            final InvestigativePacket packet =
-                InvestigativePacket.fromJson(json.decode(message.trim()));
-            switch (packet.type) {
-              case PacketType.instanceIdentity:
-                add(NewInstance(packet.identity));
-                break;
-              case PacketType.blocCreated:
-                _log(
-                    Log(
-                      packet.identity,
-                      BlocLog(
-                        type: BlocLogType.blocCreated,
-                        blocName: packet.blocName,
-                        state: packet.state,
-                      ),
-                    ),
-                    emit);
-                break;
-              case PacketType.blocFallbackCreated:
-                _log(
-                    Log(
-                      packet.identity,
-                      BlocLog(
-                        type: BlocLogType.blocFallbackCreated,
-                        decodeErrorReason: packet.decodeErrorReason,
-                        blocName: packet.blocName,
-                        fallbackState: packet.fallbackState,
-                      ),
-                    ),
-                    emit);
-                break;
-              case PacketType.blocFallbackTransitioned:
-                _log(
-                    Log(
-                      packet.identity,
-                      BlocLog(
-                          decodeErrorReason: packet.decodeErrorReason,
-                          type: BlocLogType.blocFallbackTransitioned,
-                          blocName: packet.blocName,
-                          blocChange: packet.blocChange,
-                          oldFallbackState: packet.oldFallbackState,
-                          newFallbackState: packet.newFallbackState),
-                    ),
-                    emit);
-                break;
-              case PacketType.blocTransitioned:
-                _log(
-                    Log(
-                        packet.identity,
-                        BlocLog(
-                          type: BlocLogType.blocTransitioned,
-                          blocName: packet.blocName,
-                          blocChange: packet.blocChange,
-                        )),
-                    emit);
-                break;
-              case PacketType.blocError:
-                break;
-              default:
-            }
-          }
-        }
-      } catch (error, trace) {
-        final fullMessage =
-            (state.buffer[event.key]?.trim() ?? "") + event.remnant;
-        logError(error, trace);
-        add(ClearBuffer(event.key));
-      }
-    });
-  }
-
-  void _newConnection(NewConnection event, Emitter<ServiceState> emit) {
-    logInfo('Connection from'
-        ' ${event.client.remoteAddress.address}:${event.client.remotePort}');
-
-    emit(state.copyWith(
-        clients: Map.from(state.clients)..[event.client.port] = event.client));
-
-    event.client.listen(
-      (Uint8List data) async {
-        // await Future.delayed(const Duration(milliseconds: 500));
-        final message = String.fromCharCodes(data);
-        if (!message.endsWith("\n")) {
-          add(Buffer(event.client.port, message));
-        } else {
-          add(ReadBuffer(event.client.port, message));
-          state.clients[event.client.port]?.writeln("Ok");
-        }
-      },
-      onError: (error) {
-        logger.e(error);
-        event.client.close();
-      },
-      onDone: () {
-        logInfo('Client left');
-        event.client.close();
-      },
-    );
-  }
-
-  void _triggerUIRebuild(TriggerUIRebuild event, Emitter<ServiceState> emit) {
+  void _triggerUIRebuild(_TriggerUIRebuild event, Emitter<ServiceState> emit) {
     emit(state.copyWith(builderTrigger: state.builderTrigger + 1));
   }
 

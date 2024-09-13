@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:bloc_inspector_client/screens/home/home.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_inspector_client/blocs/service/service_bloc.dart';
 import 'package:bloc_inspector_client/cubits/selected_log_index_cubit.dart';
-import 'package:bloc_inspector_client/screens/instances.dart';
-import 'package:bloc_inspector_client/screens/logs.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:window_size/window_size.dart';
 
 void main() {
@@ -21,7 +21,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,16 +36,18 @@ class MyApp extends StatelessWidget {
           lazy: false,
         ),
       ],
-      child: MaterialApp(
-        title: 'BLoC Inspector',
-        initialRoute: InstancesScreen.routeName,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+      child: ScreenUtilInit(
+        designSize: const Size(1920, 1080),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) => FluentApp(
+          title: 'BLoC Inspector',
+          initialRoute: HomeScreen.routeName,
+          theme: FluentThemeData(),
+          routes: {
+            HomeScreen.routeName: (context) => const HomeScreen(),
+          },
         ),
-        routes: {
-          InstancesScreen.routeName: (context) => const InstancesScreen(),
-          LogsScreen.routeName: (context) => const LogsScreen(),
-        },
       ),
     );
   }

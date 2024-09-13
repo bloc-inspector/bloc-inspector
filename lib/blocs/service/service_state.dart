@@ -1,13 +1,4 @@
-import 'dart:io';
-
-import 'package:equatable/equatable.dart';
-import 'package:bloc_inspector_client/models/bloc_log.dart';
-import 'package:bloc_inspector_client/models/instance_identity.dart';
-
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:nsd/nsd.dart';
-
-part 'service_state.freezed.dart';
+part of 'service_bloc.dart';
 
 @freezed
 class ServiceState extends Equatable with _$ServiceState {
@@ -21,7 +12,7 @@ class ServiceState extends Equatable with _$ServiceState {
     @Default({}) Map<String, List<BlocLog>> logs,
     InstanceIdentity? selectedInstanceIdentity,
     Registration? registration,
-    ServerSocket? server,
+    HttpServer? server,
     @Default(0) int builderTrigger,
   }) = _ServiceState;
 

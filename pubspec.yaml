@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -18,14 +18,14 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 scripts:
-  run: "flutter run -t lib/main_development.dart --flavor development"
-  gen: "flutter pub run build_runner build"
-  gen-force: "flutter pub run build_runner build --delete-conflicting-outputs"
+  run: 'flutter run -t lib/main_development.dart --flavor development'
+  gen: 'dart run build_runner build'
+  gen-force: 'flutter pub run build_runner build --delete-conflicting-outputs'
   apk: flutter build apk --verbose
   bundle: flutter build appbundle --target-platform android-arm,android-arm64,android-x64 --release --obfuscate --split-debug-info=/Users/francis/htdocs/tolaram-group/driver_app/build/app/outputs/symbols --verbose
 
 environment:
-  sdk: ">=2.17.5 <3.0.0"
+  sdk: '>=2.17.5 <3.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,15 +37,20 @@ dependencies:
   flutter:
     sdk: flutter
 
-  nsd: ^2.2.3
-  logger: ^1.1.0
+  nsd: ^3.0.0
+  logger: ^2.4.0
   json_annotation: ^4.3.0
-  freezed_annotation: ^1.1.0
+  freezed_annotation: ^2.4.4
   flutter_bloc: ^8.0.1
   equatable: ^2.0.3
   synchronized: ^3.0.0
   timeago: ^3.2.2
-  pluto_menu_bar: ^1.1.1
+  collection: ^1.15.0
+  pluto_menu_bar: ^3.0.1
+  fluent_ui: ^4.9.1
+  flutter_hooks: ^0.20.5
+  fluentui_system_icons: ^1.1.257
+  flutter_screenutil: ^5.6.0
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git
@@ -59,7 +64,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  freezed: ^1.1.1
+  freezed: ^2.5.7
   build_runner: ^2.1.7
   json_serializable: ^6.0.0
 
@@ -68,7 +73,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

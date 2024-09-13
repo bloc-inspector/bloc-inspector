@@ -1,6 +1,6 @@
 extension StringExtension on String {
   String ucfirst() {
-    return "${this[0].toUpperCase()}${substring(1)}";
+    return length > 0 ? "${this[0].toUpperCase()}${substring(1)}" : this;
   }
 
   String stripLeft(String pattern) {

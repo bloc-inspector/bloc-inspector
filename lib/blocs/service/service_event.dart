@@ -1,26 +1,18 @@
-import 'dart:io';
-
-import 'package:bloc_inspector_client/models/bloc_log.dart';
-import 'package:bloc_inspector_client/models/instance_identity.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'service_event.freezed.dart';
+part of 'service_bloc.dart';
 
 @freezed
 class ServiceEvent with _$ServiceEvent {
   const factory ServiceEvent() = _ServiceEvent;
 
-  const factory ServiceEvent.initialized() = Initialized;
+  const factory ServiceEvent.initialized() = _Initialized;
   const factory ServiceEvent.newInstance(InstanceIdentity identity) =
-      NewInstance;
-  const factory ServiceEvent.newConnection(Socket client) = NewConnection;
-  const factory ServiceEvent.closeConnection() = CloseConnection;
-  const factory ServiceEvent.buffer(int key, String data) = Buffer;
-  const factory ServiceEvent.clearBuffer(int key) = ClearBuffer;
-  const factory ServiceEvent.readBuffer(int key, String remnant) = ReadBuffer;
-  const factory ServiceEvent.log(InstanceIdentity identity, BlocLog log) = Log;
+      _NewInstance;
+  const factory ServiceEvent.closeConnection() = _CloseConnection;
+  const factory ServiceEvent.log(InstanceIdentity identity, BlocLog log) = _Log;
   const factory ServiceEvent.selectInstance(InstanceIdentity identity) =
-      SelectInstance;
-  const factory ServiceEvent.clearLogs(InstanceIdentity identity) = ClearLogs;
-  const factory ServiceEvent.triggerUIRebuild() = TriggerUIRebuild;
+      _SelectInstance;
+  const factory ServiceEvent.clearLogs(InstanceIdentity identity) = _ClearLogs;
+  const factory ServiceEvent.triggerUIRebuild() = _TriggerUIRebuild;
+  const factory ServiceEvent.handleHttpRequest(HttpRequest request) =
+      _HandleHttpRequest;
 }
