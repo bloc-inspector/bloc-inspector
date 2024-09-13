@@ -50,6 +50,6 @@ app.*.map.json
 *.g.dart
 *.freezed.dart
 
-
 deb/
 *.snap
+installer/macos_dmg/flutter-bloc-inspector.dmg
