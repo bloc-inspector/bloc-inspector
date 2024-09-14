@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bloc_inspector_client/blocs/preferences/preferences_bloc.dart';
 import 'package:bloc_inspector_client/screens/home/home.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +13,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    setWindowTitle('BLoC Inspector');
+    setWindowTitle('BLoC Inspector - Flutter');
     setWindowMaxSize(const Size(double.infinity, double.infinity));
     setWindowMinSize(const Size(1280, 720));
   }
@@ -35,18 +36,30 @@ class MyApp extends StatelessWidget {
           create: (context) => SelectedLogIndexCubit(),
           lazy: false,
         ),
+        BlocProvider<PreferencesBloc>(
+          create: (context) => PreferencesBloc(),
+        ),
       ],
       child: ScreenUtilInit(
         designSize: const Size(1920, 1080),
         minTextAdapt: true,
         splitScreenMode: true,
-        builder: (context, child) => FluentApp(
-          title: 'BLoC Inspector',
-          initialRoute: HomeScreen.routeName,
-          theme: FluentThemeData(),
-          routes: {
-            HomeScreen.routeName: (context) => const HomeScreen(),
-          },
+        builder: (context, child) =>
+            BlocBuilder<PreferencesBloc, PreferencesState>(
+          builder: (context, state) => FluentApp(
+            title: 'BLoC Inspector - Flutter',
+            initialRoute: HomeScreen.routeName,
+            themeMode: state.isDarkMode == null
+                ? ThemeMode.system
+                : (state.isDarkMode! ? ThemeMode.dark : ThemeMode.light),
+            theme: FluentThemeData(brightness: Brightness.light),
+            darkTheme: FluentThemeData(
+              brightness: Brightness.dark,
+            ),
+            routes: {
+              HomeScreen.routeName: (context) => const HomeScreen(),
+            },
+          ),
         ),
       ),
     );
